@@ -36,10 +36,6 @@ jobs:
   docker-release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v3
@@ -76,10 +72,6 @@ jobs:
   docker-debug-release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
       - name: Docker meta
         id: meta-debug
         uses: docker/metadata-action@v3
