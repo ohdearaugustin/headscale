@@ -88,11 +88,14 @@ jobs:
           images: |
             ${{ secrets.DOCKERHUB_USERNAME }}/headscale
             ghcr.io/${{ github.repository_owner }}/headscale
+          flavor: |
+            latest=false
           tags: |
             type=semver,pattern={{version}}-debug
             type=semver,pattern={{major}}.{{minor}}-debug
             type=semver,pattern={{major}}-debug
-            type=sha
+            type=raw,value=latest-debug
+            type=sha,suffix=-debug
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
