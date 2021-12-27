@@ -155,7 +155,10 @@ func (api headscaleV1APIServer) RegisterMachine(
 	ctx context.Context,
 	request *v1.RegisterMachineRequest,
 ) (*v1.RegisterMachineResponse, error) {
-	log.Trace().Str("namespace", request.GetNamespace()).Str("machine_key", request.GetKey()).Msg("Registering machine")
+	log.Trace().
+		Str("namespace", request.GetNamespace()).
+		Str("machine_key", request.GetKey()).
+		Msg("Registering machine")
 	machine, err := api.h.RegisterMachine(
 		request.GetKey(),
 		request.GetNamespace(),
@@ -198,6 +201,27 @@ func (api headscaleV1APIServer) DeleteMachine(
 	return &v1.DeleteMachineResponse{}, nil
 }
 
+func (api headscaleV1APIServer) ExpireMachine(
+	ctx context.Context,
+	request *v1.ExpireMachineRequest,
+) (*v1.ExpireMachineResponse, error) {
+	machine, err := api.h.GetMachineByID(request.GetMachineId())
+	if err != nil {
+		return nil, err
+	}
+
+	api.h.ExpireMachine(
+		machine,
+	)
+
+	log.Trace().
+		Str("machine", machine.Name).
+		Time("expiry", *machine.Expiry).
+		Msg("machine expired")
+
+	return &v1.ExpireMachineResponse{Machine: machine.toProto()}, nil
+}
+
 func (api headscaleV1APIServer) ListMachines(
 	ctx context.Context,
 	request *v1.ListMachinesRequest,
@@ -208,7 +232,9 @@ func (api headscaleV1APIServer) ListMachines(
 			return nil, err
 		}
 
-		sharedMachines, err := api.h.ListSharedMachinesInNamespace(request.GetNamespace())
+		sharedMachines, err := api.h.ListSharedMachinesInNamespace(
+			request.GetNamespace(),
+		)
 		if err != nil {
 			return nil, err
 		}
@@ -333,12 +359,16 @@ func (api headscaleV1APIServer) DebugCreateMachine(
 		return nil, err
 	}
 
-	routes, err := stringToIpPrefix(request.GetRoutes())
+	routes, err := stringToIPPrefix(request.GetRoutes())
 	if err != nil {
 		return nil, err
 	}
 
-	log.Trace().Caller().Interface("route-prefix", routes).Interface("route-str", request.GetRoutes()).Msg("")
+	log.Trace().
+		Caller().
+		Interface("route-prefix", routes).
+		Interface("route-str", request.GetRoutes()).
+		Msg("")
 
 	hostinfo := tailcfg.Hostinfo{
 		RoutableIPs: routes,

@@ -9,6 +9,16 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+const (
+	keyLength             = 64
+	errPreAuthKeyTooShort = Error("key too short, must be 64 hexadecimal characters")
+)
+
+// Error is used to compare errors as per https://dave.cheney.net/2016/04/07/constant-errors
+type Error string
+
+func (e Error) Error() string { return string(e) }
+
 func init() {
 	rootCmd.AddCommand(debugCmd)
 
@@ -27,7 +37,8 @@ func init() {
 	if err != nil {
 		log.Fatal().Err(err).Msg("")
 	}
-	createNodeCmd.Flags().StringSliceP("route", "r", []string{}, "List (or repeated flags) of routes to advertise")
+	createNodeCmd.Flags().
+		StringSliceP("route", "r", []string{}, "List (or repeated flags) of routes to advertise")
 
 	debugCmd.AddCommand(createNodeCmd)
 }
@@ -47,6 +58,7 @@ var createNodeCmd = &cobra.Command{
 		namespace, err := cmd.Flags().GetString("namespace")
 		if err != nil {
 			ErrorOutput(err, fmt.Sprintf("Error getting namespace: %s", err), output)
+
 			return
 		}
 
@@ -56,19 +68,44 @@ var createNodeCmd = &cobra.Command{
 
 		name, err := cmd.Flags().GetString("name")
 		if err != nil {
-			ErrorOutput(err, fmt.Sprintf("Error getting node from flag: %s", err), output)
+			ErrorOutput(
+				err,
+				fmt.Sprintf("Error getting node from flag: %s", err),
+				output,
+			)
+
 			return
 		}
 
 		machineKey, err := cmd.Flags().GetString("key")
 		if err != nil {
-			ErrorOutput(err, fmt.Sprintf("Error getting key from flag: %s", err), output)
+			ErrorOutput(
+				err,
+				fmt.Sprintf("Error getting key from flag: %s", err),
+				output,
+			)
+
+			return
+		}
+		if len(machineKey) != keyLength {
+			err = errPreAuthKeyTooShort
+			ErrorOutput(
+				err,
+				fmt.Sprintf("Error: %s", err),
+				output,
+			)
+
 			return
 		}
 
 		routes, err := cmd.Flags().GetStringSlice("route")
 		if err != nil {
-			ErrorOutput(err, fmt.Sprintf("Error getting routes from flag: %s", err), output)
+			ErrorOutput(
+				err,
+				fmt.Sprintf("Error getting routes from flag: %s", err),
+				output,
+			)
+
 			return
 		}
 
@@ -81,7 +118,12 @@ var createNodeCmd = &cobra.Command{
 
 		response, err := client.DebugCreateMachine(ctx, request)
 		if err != nil {
-			ErrorOutput(err, fmt.Sprintf("Cannot create machine: %s", status.Convert(err).Message()), output)
+			ErrorOutput(
+				err,
+				fmt.Sprintf("Cannot create machine: %s", status.Convert(err).Message()),
+				output,
+			)
+
 			return
 		}
 

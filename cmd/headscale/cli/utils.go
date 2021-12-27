@@ -52,9 +52,8 @@ func LoadConfig(path string) error {
 	viper.SetDefault("cli.insecure", false)
 	viper.SetDefault("cli.timeout", "5s")
 
-	err := viper.ReadInConfig()
-	if err != nil {
-		return fmt.Errorf("Fatal error reading config file: %s \n", err)
+	if err := viper.ReadInConfig(); err != nil {
+		return fmt.Errorf("fatal error reading config file: %w", err)
 	}
 
 	// Collect any validation errors and return them all at once
@@ -82,6 +81,7 @@ func LoadConfig(path string) error {
 		errorText += "Fatal config error: server_url must start with https:// or http://\n"
 	}
 	if errorText != "" {
+		//nolint
 		return errors.New(strings.TrimSuffix(errorText, "\n"))
 	} else {
 		return nil
@@ -149,9 +149,14 @@ func GetDNSConfig() (*tailcfg.DNSConfig, string) {
 		if viper.IsSet("dns_config.restricted_nameservers") {
 			if len(dnsConfig.Nameservers) > 0 {
 				dnsConfig.Routes = make(map[string][]dnstype.Resolver)
-				restrictedDNS := viper.GetStringMapStringSlice("dns_config.restricted_nameservers")
+				restrictedDNS := viper.GetStringMapStringSlice(
+					"dns_config.restricted_nameservers",
+				)
 				for domain, restrictedNameservers := range restrictedDNS {
-					restrictedResolvers := make([]dnstype.Resolver, len(restrictedNameservers))
+					restrictedResolvers := make(
+						[]dnstype.Resolver,
+						len(restrictedNameservers),
+					)
 					for index, nameserverStr := range restrictedNameservers {
 						nameserver, err := netaddr.ParseIP(nameserverStr)
 						if err != nil {
@@ -208,43 +213,26 @@ func absPath(path string) string {
 			path = filepath.Join(dir, path)
 		}
 	}
+
 	return path
 }
 
 func getHeadscaleConfig() headscale.Config {
-	// maxMachineRegistrationDuration is the maximum time headscale will allow a client to (optionally) request for
-	// the machine key expiry time. RegisterRequests with Expiry times that are more than
-	// maxMachineRegistrationDuration in the future will be clamped to (now + maxMachineRegistrationDuration)
-	maxMachineRegistrationDuration, _ := time.ParseDuration(
-		"10h",
-	) // use 10h here because it is the length of a standard business day plus a small amount of leeway
-	if viper.GetDuration("max_machine_registration_duration") >= time.Second {
-		maxMachineRegistrationDuration = viper.GetDuration("max_machine_registration_duration")
-	}
-
-	// defaultMachineRegistrationDuration is the default time assigned to a machine registration if one is not
-	// specified by the tailscale client. It is the default amount of time a machine registration is valid for
-	// (ie the amount of time before the user has to re-authenticate when requesting a connection)
-	defaultMachineRegistrationDuration, _ := time.ParseDuration(
-		"8h",
-	) // use 8h here because it's the length of a standard business day
-	if viper.GetDuration("default_machine_registration_duration") >= time.Second {
-		defaultMachineRegistrationDuration = viper.GetDuration("default_machine_registration_duration")
-	}
-
 	dnsConfig, baseDomain := GetDNSConfig()
 	derpConfig := GetDERPConfig()
 
 	return headscale.Config{
 		ServerURL:      viper.GetString("server_url"),
 		Addr:           viper.GetString("listen_addr"),
-		PrivateKeyPath: absPath(viper.GetString("private_key_path")),
 		IPPrefix:       netaddr.MustParseIPPrefix(viper.GetString("ip_prefix")),
+		PrivateKeyPath: absPath(viper.GetString("private_key_path")),
 		BaseDomain:     baseDomain,
 
 		DERP: derpConfig,
 
-		EphemeralNodeInactivityTimeout: viper.GetDuration("ephemeral_node_inactivity_timeout"),
+		EphemeralNodeInactivityTimeout: viper.GetDuration(
+			"ephemeral_node_inactivity_timeout",
+		),
 
 		DBtype: viper.GetString("db_type"),
 		DBpath: absPath(viper.GetString("db_path")),
@@ -254,9 +242,11 @@ func getHeadscaleConfig() headscale.Config {
 		DBuser: viper.GetString("db_user"),
 		DBpass: viper.GetString("db_pass"),
 
-		TLSLetsEncryptHostname:      viper.GetString("tls_letsencrypt_hostname"),
-		TLSLetsEncryptListen:        viper.GetString("tls_letsencrypt_listen"),
-		TLSLetsEncryptCacheDir:      absPath(viper.GetString("tls_letsencrypt_cache_dir")),
+		TLSLetsEncryptHostname: viper.GetString("tls_letsencrypt_hostname"),
+		TLSLetsEncryptListen:   viper.GetString("tls_letsencrypt_listen"),
+		TLSLetsEncryptCacheDir: absPath(
+			viper.GetString("tls_letsencrypt_cache_dir"),
+		),
 		TLSLetsEncryptChallengeType: viper.GetString("tls_letsencrypt_challenge_type"),
 
 		TLSCertPath: absPath(viper.GetString("tls_cert_path")),
@@ -281,9 +271,6 @@ func getHeadscaleConfig() headscale.Config {
 			Insecure: viper.GetBool("cli.insecure"),
 			Timeout:  viper.GetDuration("cli.timeout"),
 		},
-
-		MaxMachineRegistrationDuration:     maxMachineRegistrationDuration,
-		DefaultMachineRegistrationDuration: defaultMachineRegistrationDuration,
 	}
 }
 
@@ -292,11 +279,14 @@ func getHeadscaleApp() (*headscale.Headscale, error) {
 	// to avoid races
 	minInactivityTimeout, _ := time.ParseDuration("65s")
 	if viper.GetDuration("ephemeral_node_inactivity_timeout") <= minInactivityTimeout {
+		// TODO: Find a better way to return this text
+		//nolint
 		err := fmt.Errorf(
-			"ephemeral_node_inactivity_timeout (%s) is set too low, must be more than %s\n",
+			"ephemeral_node_inactivity_timeout (%s) is set too low, must be more than %s",
 			viper.GetString("ephemeral_node_inactivity_timeout"),
 			minInactivityTimeout,
 		)
+
 		return nil, err
 	}
 
@@ -304,7 +294,7 @@ func getHeadscaleApp() (*headscale.Headscale, error) {
 
 	cfg.OIDC.MatchMap = loadOIDCMatchMap()
 
-	h, err := headscale.NewHeadscale(cfg)
+	app, err := headscale.NewHeadscale(cfg)
 	if err != nil {
 		return nil, err
 	}
@@ -313,7 +303,7 @@ func getHeadscaleApp() (*headscale.Headscale, error) {
 
 	if viper.GetString("acl_policy_path") != "" {
 		aclPath := absPath(viper.GetString("acl_policy_path"))
-		err = h.LoadACLPolicy(aclPath)
+		err = app.LoadACLPolicy(aclPath)
 		if err != nil {
 			log.Error().
 				Str("path", aclPath).
@@ -322,7 +312,7 @@ func getHeadscaleApp() (*headscale.Headscale, error) {
 		}
 	}
 
-	return h, nil
+	return app, nil
 }
 
 func getHeadscaleCLIClient() (context.Context, v1.HeadscaleServiceClient, *grpc.ClientConn, context.CancelFunc) {
@@ -342,7 +332,6 @@ func getHeadscaleCLIClient() (context.Context, v1.HeadscaleServiceClient, *grpc.
 
 	// If the address is not set, we assume that we are on the server hosting headscale.
 	if address == "" {
-
 		log.Debug().
 			Str("socket", cfg.UnixSocket).
 			Msgf("HEADSCALE_CLI_ADDRESS environment is not set, connecting to unix socket.")
@@ -402,10 +391,13 @@ func SuccessOutput(result interface{}, override string, outputFormat string) {
 			log.Fatal().Err(err)
 		}
 	default:
+		//nolint
 		fmt.Println(override)
+
 		return
 	}
 
+	//nolint
 	fmt.Println(string(j))
 }
 
@@ -423,6 +415,7 @@ func HasMachineOutputFlag() bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -431,7 +424,10 @@ type tokenAuth struct {
 }
 
 // Return value is mapped to request headers.
-func (t tokenAuth) GetRequestMetadata(ctx context.Context, in ...string) (map[string]string, error) {
+func (t tokenAuth) GetRequestMetadata(
+	ctx context.Context,
+	in ...string,
+) (map[string]string, error) {
 	return map[string]string{
 		"authorization": "Bearer " + t.token,
 	}, nil
