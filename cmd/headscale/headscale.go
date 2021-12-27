@@ -74,7 +74,7 @@ func main() {
 			if err == nil && res.Outdated {
 				//nolint
 				fmt.Printf(
-					"An updated version of Headscale has been found (%s vs. your current %s). Check it out https://github.com/juanfont/headscale/releases\n",
+                    "Test Change: An updated version of Headscale has been found (%s vs. your current %s). Check it out https://github.com/juanfont/headscale/releases\n",
 					res.Current,
 					cli.Version,
 				)
