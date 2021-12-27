@@ -42,10 +42,10 @@ jobs:
           fetch-depth: 0
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-      - name: Set up QEMU for multiple platforms
-        uses: docker/setup-qemu-action@master
-        with:
-          platforms: arm64,amd64
+      #- name: Set up QEMU for multiple platforms
+      #  uses: docker/setup-qemu-action@master
+      #  with:
+      #    platforms: arm64,amd64
       - name: Cache Docker layers
         uses: actions/cache@v2
         with:
@@ -103,10 +103,10 @@ jobs:
           fetch-depth: 0
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-      - name: Set up QEMU for multiple platforms
-        uses: docker/setup-qemu-action@master
-        with:
-          platforms: arm64,amd64
+          #- name: Set up QEMU for multiple platforms
+          #  uses: docker/setup-qemu-action@master
+          #  with:
+          #    platforms: arm64,amd64
       - name: Cache Docker layers
         uses: actions/cache@v2
         with:
