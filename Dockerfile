@@ -10,7 +10,7 @@ RUN go mod download
 COPY . .
 
 RUN GOOS=$TARGETOS GOARCH=$TARGETARCH go install -a -ldflags="-extldflags=-static" -tags netgo,sqlite_omit_load_extension ./cmd/headscale
-RUN if [$TARGETOS = $BUILDPLATFORM ]; then test -e /go/bin/headscale; else test -e /go/bin/$TARGETOS_$TARGETARCH/headscale; fi
+RUN if [$BUILDPLATFORM == $TARGETOS/$TARGETARCH ]; then test -e /go/bin/headscale; else test -e /go/bin/$TARGETOS_$TARGETARCH/headscale; fi
 
 # Production image
 FROM gcr.io/distroless/base-debian11
