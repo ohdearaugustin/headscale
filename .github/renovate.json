@@ -1,5 +1,7 @@
 {
   "baseBranches": ["main"],
+  "username": "renovate-release",
+  "gitAuthor": "Renovate Bot <bot@renovateapp.com>",
   "branchPrefix": "renovateaction",
   "extends": ["config:base", ":rebaseStalePrs"],
   "enabledManagers": ["dockerfile", "go", "github-actions"],
