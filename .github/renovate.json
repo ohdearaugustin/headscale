@@ -5,7 +5,7 @@
   "branchPrefix": "renovateaction/",
   "onboarding": false,
   "extends": ["config:base", ":rebaseStalePrs"],
-  "enabledManagers": ["dockerfile", "go", "github-actions"],
+  "enabledManagers": ["dockerfile", "gomod", "github-actions"],
   "includeForks": true,
   "repositories": ["ohdearaugustin/headscale"],
   "platform": "github"
