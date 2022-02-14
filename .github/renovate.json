@@ -2,8 +2,10 @@
   "baseBranches": ["main"],
   "username": "renovate-release",
   "gitAuthor": "Renovate Bot <bot@renovateapp.com>",
-  "branchPrefix": "renovateaction",
+  "branchPrefix": "renovateaction/",
+  "onboarding": false,
   "extends": ["config:base", ":rebaseStalePrs"],
   "enabledManagers": ["dockerfile", "go", "github-actions"],
-  "repositories": ["headscale"]
+  "repositories": ["ohdearaugustin/headscale"],
+  "platform": "github"
 }
