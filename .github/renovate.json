@@ -5,6 +5,7 @@
   "branchPrefix": "renovateaction/",
   "onboarding": false,
   "extends": ["config:base", ":rebaseStalePrs"],
+  "ignorePresets": [":prHourlyLimit2"],
   "enabledManagers": ["dockerfile", "gomod", "github-actions"],
   "includeForks": true,
   "repositories": ["ohdearaugustin/headscale"],
