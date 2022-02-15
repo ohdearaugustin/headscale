@@ -8,5 +8,18 @@
   "enabledManagers": ["dockerfile", "gomod", "github-actions"],
   "includeForks": true,
   "repositories": ["ohdearaugustin/headscale"],
-  "platform": "github"
+  "platform": "github",
+  "packageRules": [
+    {
+        "matchDatasources": ["go"],
+        "groupName": "Go modules",
+        "groupSlug": "gomod",
+        "separateMajorMinor": false
+    },
+    {
+        "matchDatasources": ["docker"],
+        "groupName": "Dockerfiles",
+        "groupSlug": "dockerfiles"
+    } 
+  ]
 }
