@@ -25,9 +25,9 @@
   ]
   "regexManagers": [
     {
-      "fileMatch": ["^.github/workflows/build.yml$"],
+      "fileMatch": ["^build.yml$"],
       "matchStrings": [
-        "\s*go-version:(?<currentValue>.*?)\\n"
+        "\\s*go-version:(?<currentValue>.*?)\\n"
       ]
       "datasourceTemplate": "golang-version"
     }
