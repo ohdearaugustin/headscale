@@ -22,7 +22,7 @@
         "groupName": "Dockerfiles",
         "groupSlug": "dockerfiles"
     } 
-  ]
+  ],
   "regexManagers": [
     {
       "fileMatch": ["^build.yml$"],
