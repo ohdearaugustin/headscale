@@ -29,7 +29,8 @@
       "matchStrings": [
         "\\s*go-version:(?<currentValue>.*?)\\n"
       ],
-      "datasourceTemplate": "golang-version"
+      "datasourceTemplate": "golang-version",
+      "depNameTemplate": "headscale"
     }
   ]
 }
