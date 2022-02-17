@@ -6,7 +6,7 @@
   "onboarding": false,
   "extends": ["config:base", ":rebaseStalePrs"],
   "ignorePresets": [":prHourlyLimit2"],
-  "enabledManagers": ["dockerfile", "gomod", "github-actions"],
+  "enabledManagers": ["dockerfile", "gomod", "github-actions","regex" ],
   "includeForks": true,
   "repositories": ["ohdearaugustin/headscale"],
   "platform": "github",
@@ -22,5 +22,13 @@
         "groupName": "Dockerfiles",
         "groupSlug": "dockerfiles"
     } 
+  ]
+  "regexManagers": [
+    {
+      "fileMatch": ["^.github/workflows/build.yml$"],
+      "matchStrings": [
+        "\s*go-version:(?<currentValue>.*?)\\n"
+      "datasourceTemplate": "golang-version"
+    }
   ]
 }
