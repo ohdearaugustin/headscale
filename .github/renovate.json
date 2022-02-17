@@ -27,7 +27,7 @@
     {
       "fileMatch": ["^build.yml$"],
       "matchStrings": [
-        "\\s*go-version:\\s*\\"(?<currentValue>.*?)\\"\\n"
+        "\\s*go-version:\\s*\"(?<currentValue>.*?)\"\\n",
       ],
       "datasourceTemplate": "go",
       "depNameTemplate": "go"
