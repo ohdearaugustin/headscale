@@ -28,6 +28,7 @@
       "fileMatch": ["^.github/workflows/build.yml$"],
       "matchStrings": [
         "\s*go-version:(?<currentValue>.*?)\\n"
+      ]
       "datasourceTemplate": "golang-version"
     }
   ]
