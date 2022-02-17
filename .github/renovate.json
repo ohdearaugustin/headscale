@@ -29,8 +29,8 @@
       "matchStrings": [
         "\\s*go-version:\\s*\"(?<currentValue>.*?)\"\\n"
       ],
-      "datasourceTemplate": "go",
-      "depNameTemplate": "go"
+      "datasourceTemplate": "action/build",
+      "depNameTemplate": "golang-version"
     }
   ]
 }
