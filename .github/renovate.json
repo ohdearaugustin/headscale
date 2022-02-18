@@ -35,7 +35,7 @@
         "\\s*go-version:\\s*\"?(?<currentValue>.*?)\"?\\n"
       ],
       "datasourceTemplate": "golang-version",
-      "depNameTemplate": "actions/build"
+      "depNameTemplate": "actions/go-version"
     }
   ]
 }
