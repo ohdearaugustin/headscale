@@ -769,6 +769,7 @@ func (h *Headscale) getTLSSettings() (*tls.Config, error) {
 		}
 
 		switch h.cfg.TLS.LetsEncrypt.ChallengeType {
+        //nolint:goconst
 		case "TLS-ALPN-01":
 			// Configuration via autocert with TLS-ALPN-01 (https://tools.ietf.org/html/rfc8737)
 			// The RFC requires that the validation is done on port 443; in other words, headscale

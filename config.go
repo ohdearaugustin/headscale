@@ -170,13 +170,13 @@ func LoadConfig(path string, isFile bool) error {
 
 	// Collect any validation errors and return them all at once
 	var errorText string
-    // nolint:goconst
 	if (viper.GetString("tls_letsencrypt_hostname") != "") &&
 		((viper.GetString("tls_cert_path") != "") || (viper.GetString("tls_key_path") != "")) {
 		errorText += "Fatal config error: set either tls_letsencrypt_hostname or tls_cert_path/tls_key_path, not both\n"
 	}
 
 	if (viper.GetString("tls_letsencrypt_hostname") != "") &&
+    // nolint:goconst
 		(viper.GetString("tls_letsencrypt_challenge_type") == "TLS-ALPN-01") &&
 		(!strings.HasSuffix(viper.GetString("listen_addr"), ":443")) {
 		// this is only a warning because there could be something sitting in front of headscale that redirects the traffic (e.g. an iptables rule)
@@ -185,6 +185,7 @@ func LoadConfig(path string, isFile bool) error {
 	}
 
 	if (viper.GetString("tls_letsencrypt_challenge_type") != "HTTP-01") &&
+    // nolint:goconst
 		(viper.GetString("tls_letsencrypt_challenge_type") != "TLS-ALPN-01") {
 		errorText += "Fatal config error: the only supported values for tls_letsencrypt_challenge_type are HTTP-01 and TLS-ALPN-01\n"
 	}
