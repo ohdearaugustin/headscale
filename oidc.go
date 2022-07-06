@@ -132,6 +132,7 @@ var oidcCallbackTemplate = template.Must(
 // TODO: A confirmation page for new machines should be added to avoid phishing vulnerabilities
 // TODO: Add groups information from OIDC tokens into machine HostInfo
 // Listens in /oidc/callback.
+// nolint:gocyclo
 func (h *Headscale) OIDCCallback(
 	writer http.ResponseWriter,
 	req *http.Request,
